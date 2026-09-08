@@ -1,0 +1,10 @@
+{
+  "name": "AZRO CAFE",
+  "description": "Specialty coffee ordering, dynamic QR loyalty & rewards system, and cafe administration dashboard.",
+  "requestFramePermissions": [
+    "camera"
+  ],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

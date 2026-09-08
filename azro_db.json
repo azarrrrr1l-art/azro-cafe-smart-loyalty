@@ -1,0 +1,644 @@
+{
+  "users": [
+    {
+      "id": "usr-customer-1",
+      "name": "Alex Mercer",
+      "email": "customer@azrocafe.com",
+      "phone": "+91 98765 43210",
+      "role": "customer",
+      "createdAt": "2026-08-09T16:41:47.196Z",
+      "points": 290,
+      "totalVisits": 10,
+      "lastVisitAt": "2026-09-08T16:42:01.014Z",
+      "membershipLevel": "Silver",
+      "qrSecret": "AZRO_CUST_QR_ALEX99",
+      "stampsCount": 6,
+      "passwordHash": "azro123"
+    },
+    {
+      "id": "usr-admin-1",
+      "name": "Azro Roasters (Admin)",
+      "email": "admin@azrocafe.com",
+      "phone": "+91 98765 00001",
+      "role": "admin",
+      "createdAt": "2026-03-12T16:41:47.196Z",
+      "points": 0,
+      "totalVisits": 0,
+      "membershipLevel": "Platinum",
+      "qrSecret": "AZRO_ADMIN_SECRET",
+      "stampsCount": 0,
+      "passwordHash": "admin123"
+    },
+    {
+      "id": "usr-staff-1",
+      "name": "Elena Vance (Staff)",
+      "email": "staff@azrocafe.com",
+      "phone": "+91 98765 00002",
+      "role": "staff",
+      "createdAt": "2026-07-10T16:41:47.196Z",
+      "points": 0,
+      "totalVisits": 0,
+      "membershipLevel": "Bronze",
+      "qrSecret": "AZRO_STAFF_SECRET",
+      "stampsCount": 0,
+      "passwordHash": "staff123"
+    }
+  ],
+  "visits": [
+    {
+      "id": "vst-1788885723688",
+      "customerId": "usr-customer-1",
+      "customerName": "Alex Mercer",
+      "customerEmail": "customer@azrocafe.com",
+      "pointsEarned": 0,
+      "stampsEarned": 0,
+      "timestamp": "2026-09-08T16:42:03.688Z",
+      "qrPayload": "UNKNOWN",
+      "verifiedBy": "counter_staff",
+      "status": "duplicate_prevented",
+      "rejectionReason": "Duplicate scan within cooldown. Next scan allowed in 45 minute(s)."
+    },
+    {
+      "id": "vst-1788885721015",
+      "customerId": "usr-customer-1",
+      "customerName": "Alex Mercer",
+      "customerEmail": "customer@azrocafe.com",
+      "pointsEarned": 30,
+      "stampsEarned": 1,
+      "timestamp": "2026-09-08T16:42:01.015Z",
+      "qrPayload": "AZRO_COUNTER_QR",
+      "verifiedBy": "counter_staff",
+      "status": "valid"
+    },
+    {
+      "id": "vst-101",
+      "customerId": "usr-customer-1",
+      "customerName": "Alex Mercer",
+      "customerEmail": "customer@azrocafe.com",
+      "pointsEarned": 25,
+      "stampsEarned": 1,
+      "timestamp": "2026-09-06T16:41:47.196Z",
+      "qrPayload": "AZRO_COUNTER_QR_01",
+      "verifiedBy": "counter_staff",
+      "status": "valid"
+    },
+    {
+      "id": "vst-102",
+      "customerId": "usr-customer-1",
+      "customerName": "Alex Mercer",
+      "customerEmail": "customer@azrocafe.com",
+      "pointsEarned": 25,
+      "stampsEarned": 1,
+      "timestamp": "2026-09-08T13:41:47.196Z",
+      "qrPayload": "AZRO_TABLE_04",
+      "verifiedBy": "table_qr",
+      "status": "valid"
+    }
+  ],
+  "menu": [
+    {
+      "id": "menu-1",
+      "name": "Spanish Pistachio Latte",
+      "category": "Signature Lattes",
+      "description": "Double shot of single-origin espresso, velvety textured condensed milk, and roasted Sicilian pistachio cream foam.",
+      "price": 6.8,
+      "calories": 280,
+      "image": "https://images.unsplash.com/photo-1541167760496-1628856ab772?auto=format&fit=crop&w=800&q=80",
+      "isPopular": true,
+      "isSeasonal": false,
+      "dietary": [
+        "Contains Nuts"
+      ],
+      "options": {
+        "sizes": [
+          {
+            "name": "Regular (12oz)",
+            "priceAdd": 0
+          },
+          {
+            "name": "Large (16oz)",
+            "priceAdd": 0.8
+          }
+        ],
+        "milks": [
+          {
+            "name": "Whole Organic",
+            "priceAdd": 0
+          },
+          {
+            "name": "Oat Milk",
+            "priceAdd": 0.7
+          },
+          {
+            "name": "Almond Milk",
+            "priceAdd": 0.7
+          }
+        ],
+        "syrups": [
+          {
+            "name": "Standard Sweetness",
+            "priceAdd": 0
+          },
+          {
+            "name": "Half Sweet",
+            "priceAdd": 0
+          },
+          {
+            "name": "Extra Pistachio Drizzle",
+            "priceAdd": 0.9
+          }
+        ]
+      },
+      "available": true
+    },
+    {
+      "id": "menu-2",
+      "name": "Ethiopia Yirgacheffe V60",
+      "category": "Pour Over & Cold",
+      "description": "Slow hand-poured washed heirloom varietal with tasting notes of jasmine blossom, bergamot citrus, and candied peach.",
+      "price": 7.2,
+      "calories": 5,
+      "image": "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=800&q=80",
+      "isPopular": true,
+      "isSeasonal": true,
+      "dietary": [
+        "Vegan",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Keto"
+      ],
+      "options": {
+        "sizes": [
+          {
+            "name": "Standard Carafe (350ml)",
+            "priceAdd": 0
+          }
+        ]
+      },
+      "available": true
+    },
+    {
+      "id": "menu-3",
+      "name": "Cortado Reserva",
+      "category": "Specialty Espresso",
+      "description": "Equal parts 1:1 rich ristretto extraction and lightly steamed microfoam in a classic Gibraltar glass.",
+      "price": 4.6,
+      "calories": 90,
+      "image": "https://images.unsplash.com/photo-1534778101976-62847782c213?auto=format&fit=crop&w=800&q=80",
+      "isPopular": false,
+      "isSeasonal": false,
+      "dietary": [
+        "Gluten-Free"
+      ],
+      "options": {
+        "milks": [
+          {
+            "name": "Whole Milk",
+            "priceAdd": 0
+          },
+          {
+            "name": "Oat Milk",
+            "priceAdd": 0.6
+          }
+        ]
+      },
+      "available": true
+    },
+    {
+      "id": "menu-4",
+      "name": "Honeycomb Cold Brew",
+      "category": "Pour Over & Cold",
+      "description": "18-hour cold steeped Colombian beans poured over clear artisan crystal ice, topped with house-made honey crunch brittle.",
+      "price": 6.2,
+      "calories": 160,
+      "image": "https://images.unsplash.com/photo-1517701550927-30cf4ba1dba5?auto=format&fit=crop&w=800&q=80",
+      "isPopular": true,
+      "dietary": [
+        "Gluten-Free"
+      ],
+      "available": true
+    },
+    {
+      "id": "menu-5",
+      "name": "Almond Twice-Baked Croissant",
+      "category": "Artisan Pastries",
+      "description": "French butter laminated croissant soaked in Bourbon vanilla syrup, filled with rich frangipane almond cream and toasted flakes.",
+      "price": 5.5,
+      "calories": 390,
+      "image": "https://images.unsplash.com/photo-1555507036-ab1f4038808a?auto=format&fit=crop&w=800&q=80",
+      "isPopular": true,
+      "dietary": [
+        "Contains Nuts"
+      ],
+      "available": true
+    },
+    {
+      "id": "menu-6",
+      "name": "Avocado & Burrata Tartine",
+      "category": "Savory & Brunch",
+      "description": "Toasted organic sourdough, smashed Hass avocado, fresh Pugliese burrata, heirloom cherry tomatoes, pomegranate molasses, chili flakes.",
+      "price": 11.5,
+      "calories": 460,
+      "image": "https://images.unsplash.com/photo-1525351484163-7529414344d8?auto=format&fit=crop&w=800&q=80",
+      "isPopular": false,
+      "dietary": [
+        "Gluten-Free"
+      ],
+      "available": true
+    },
+    {
+      "id": "menu-7",
+      "name": "Iced Lavender Blossom Matcha",
+      "category": "Signature Lattes",
+      "description": "Ceremonial grade Uji matcha whisked with wild lavender blossom infusion and cold-pressed oat milk over ice.",
+      "price": 6.9,
+      "calories": 190,
+      "image": "https://images.unsplash.com/photo-1536256263959-770b48d82b0a?auto=format&fit=crop&w=800&q=80",
+      "isPopular": true,
+      "dietary": [
+        "Vegan",
+        "Dairy-Free",
+        "Gluten-Free"
+      ],
+      "available": true
+    },
+    {
+      "id": "menu-8",
+      "name": "Truffle Scramble Brioche",
+      "category": "Savory & Brunch",
+      "description": "Silky pasture-raised soft scrambled eggs with black truffle butter, chives, and aged gruyère on a golden toasted brioche bun.",
+      "price": 12.8,
+      "calories": 520,
+      "image": "https://images.unsplash.com/photo-1588137378633-dea1336ce1e2?auto=format&fit=crop&w=800&q=80",
+      "isPopular": true,
+      "dietary": [],
+      "available": true
+    }
+  ],
+  "rewards": [
+    {
+      "id": "rw-1",
+      "title": "Free Artisanal Pastry or Cookie",
+      "description": "Redeem any fresh morning bake from our display counter including croissants, pain au chocolat, or sea salt cookies.",
+      "pointsCost": 75,
+      "category": "Bakery",
+      "imageUrl": "https://images.unsplash.com/photo-1555507036-ab1f4038808a?auto=format&fit=crop&w=600&q=80",
+      "terms": "Valid on single pastry item up to $6 value. Cannot be combined with daily sets.",
+      "availableCount": 50,
+      "badge": "Popular",
+      "requiredVisits": 3,
+      "rewardValue": 180,
+      "validityDays": 30
+    },
+    {
+      "id": "rw-3",
+      "title": "25% Off Entire Order",
+      "description": "Get 25% off your entire ticket when ordering drinks and food for you or your table.",
+      "pointsCost": 180,
+      "category": "Discount",
+      "imageUrl": "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=600&q=80",
+      "terms": "Discount capped at $20 total discount value. Valid for one transaction.",
+      "availableCount": 30,
+      "badge": "Best Value",
+      "requiredVisits": 5,
+      "rewardValue": 250,
+      "validityDays": 30
+    },
+    {
+      "id": "rw-2",
+      "title": "Free Specialty Beverage",
+      "description": "Any signature latte, cold brew, or single-origin pour over in any size of your choice with all customizations included.",
+      "pointsCost": 120,
+      "category": "Beverage",
+      "imageUrl": "https://images.unsplash.com/photo-1541167760496-1628856ab772?auto=format&fit=crop&w=600&q=80",
+      "terms": "Valid for hot or iced drinks up to $8 value. Available in dine-in or takeaway.",
+      "availableCount": 100,
+      "badge": "Member Favorite",
+      "requiredVisits": 8,
+      "rewardValue": 350,
+      "validityDays": 30
+    },
+    {
+      "id": "rw-4",
+      "title": "AZRO Private Cupping Experience",
+      "description": "Join head roaster for a 45-minute guided tasting of rare geisha and anaerobic microlots with take-home 250g beans bag.",
+      "pointsCost": 450,
+      "category": "VIP Experience",
+      "imageUrl": "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=600&q=80",
+      "terms": "Requires 48-hour advance booking at AZRO flagship roastery. Gold and Platinum priority.",
+      "availableCount": 10,
+      "badge": "VIP Only",
+      "requiredVisits": 12,
+      "rewardValue": 1200,
+      "validityDays": 45
+    }
+  ],
+  "rewardClaims": [
+    {
+      "id": "clm-1",
+      "claimCode": "AZRO-BAKE-8931",
+      "rewardId": "rw-1",
+      "rewardTitle": "Free Artisanal Pastry or Cookie",
+      "pointsSpent": 75,
+      "customerId": "usr-customer-1",
+      "customerName": "Alex Mercer",
+      "claimedAt": "2026-09-07T16:41:47.196Z",
+      "status": "active",
+      "expiresAt": "2026-09-22T16:41:47.196Z"
+    }
+  ],
+  "customerRewards": [
+    {
+      "id": "crw-seed-1",
+      "customerId": "usr-customer-1",
+      "rewardId": "rw-1",
+      "rewardTitle": "Free Artisanal Pastry or Cookie",
+      "rewardValue": 180,
+      "requiredVisits": 3,
+      "status": "Unlocked",
+      "unlockedAt": "2026-09-05T16:41:47.196Z",
+      "expiresAt": "2026-10-05T16:41:47.196Z",
+      "notificationSent": true,
+      "notificationId": "rwnotif-seed-1"
+    },
+    {
+      "id": "crw-seed-2",
+      "customerId": "usr-customer-1",
+      "rewardId": "rw-3",
+      "rewardTitle": "25% Off Entire Order",
+      "rewardValue": 250,
+      "requiredVisits": 5,
+      "status": "Unlocked",
+      "unlockedAt": "2026-09-07T16:41:47.196Z",
+      "expiresAt": "2026-10-07T16:41:47.196Z",
+      "notificationSent": true,
+      "notificationId": "rwnotif-seed-2"
+    },
+    {
+      "id": "crw-1788885721015-rw-2",
+      "customerId": "usr-customer-1",
+      "rewardId": "rw-2",
+      "rewardTitle": "Free Specialty Beverage",
+      "rewardValue": 350,
+      "requiredVisits": 8,
+      "status": "Unlocked",
+      "unlockedAt": "2026-09-08T16:42:01.014Z",
+      "expiresAt": "2026-10-08T16:42:01.014Z",
+      "notificationSent": true,
+      "notificationId": "rwnotif-1788885721015-ftf6"
+    }
+  ],
+  "rewardNotifications": [
+    {
+      "id": "rwnotif-1788885721015-ftf6",
+      "customerId": "usr-customer-1",
+      "customerName": "Alex Mercer",
+      "mobileNumber": "+91 98765 43210",
+      "rewardId": "rw-2",
+      "rewardName": "Free Specialty Beverage",
+      "rewardValue": 350,
+      "status": "Sent",
+      "sentAt": "2026-09-08T16:42:01.014Z",
+      "expiryDate": "08 Oct 2026",
+      "message": "🎉 AZRO CAFE – Reward Unlocked! ☕✨\n\nHi Alex Mercer! 👋\n\nCongratulations! 🎊 You have successfully unlocked a reward from AZRO CAFE.\n\nYour reward is now ready to claim. 🎁\n\nYou can claim your reward at AZRO CAFE by showing your registered mobile number or QR code.\n\n🔥 Reward: Free Specialty Beverage\n🎟️ Reward Value: ₹350\n📅 Valid Until: 08 Oct 2026\n\nThank you for being a loyal AZRO CAFE customer! ❤️\n\n— Team AZRO CAFE ☕\n\"Your Loyalty, Our Reward.\"",
+      "channel": "WhatsApp & SMS"
+    },
+    {
+      "id": "rwnotif-seed-1",
+      "customerId": "usr-customer-1",
+      "customerName": "Alex Mercer",
+      "mobileNumber": "+91 98765 43210",
+      "rewardId": "rw-1",
+      "rewardName": "Free Artisanal Pastry or Cookie",
+      "rewardValue": 180,
+      "status": "Delivered",
+      "sentAt": "2026-09-05T16:41:47.196Z",
+      "expiryDate": "05 Oct 2026",
+      "message": "🎉 AZRO CAFE – Reward Unlocked! ☕✨\n\nHi Alex Mercer! 👋\n\nCongratulations! 🎊 You have successfully unlocked a reward from AZRO CAFE.\n\nYour reward is now ready to claim. 🎁\n\nYou can claim your reward at AZRO CAFE by showing your registered mobile number or QR code.\n\n🔥 Reward: Free Artisanal Pastry or Cookie\n🎟️ Reward Value: ₹180\n📅 Valid Until: 05 Oct 2026\n\nThank you for being a loyal AZRO CAFE customer! ❤️\n\n— Team AZRO CAFE ☕\n\"Your Loyalty, Our Reward.\"",
+      "channel": "WhatsApp & SMS"
+    },
+    {
+      "id": "rwnotif-seed-2",
+      "customerId": "usr-customer-1",
+      "customerName": "Alex Mercer",
+      "mobileNumber": "+91 98765 43210",
+      "rewardId": "rw-3",
+      "rewardName": "25% Off Entire Order",
+      "rewardValue": 250,
+      "status": "Delivered",
+      "sentAt": "2026-09-07T16:41:47.196Z",
+      "expiryDate": "07 Oct 2026",
+      "message": "🎉 AZRO CAFE – Reward Unlocked! ☕✨\n\nHi Alex Mercer! 👋\n\nCongratulations! 🎊 You have successfully unlocked a reward from AZRO CAFE.\n\nYour reward is now ready to claim. 🎁\n\nYou can claim your reward at AZRO CAFE by showing your registered mobile number or QR code.\n\n🔥 Reward: 25% Off Entire Order\n🎟️ Reward Value: ₹250\n📅 Valid Until: 07 Oct 2026\n\nThank you for being a loyal AZRO CAFE customer! ❤️\n\n— Team AZRO CAFE ☕\n\"Your Loyalty, Our Reward.\"",
+      "channel": "WhatsApp & SMS"
+    }
+  ],
+  "orders": [
+    {
+      "id": "ord-1001",
+      "orderNumber": "#AZ-4091",
+      "customerId": "usr-customer-1",
+      "customerName": "Alex Mercer",
+      "customerEmail": "customer@azrocafe.com",
+      "items": [
+        {
+          "id": "item-1",
+          "menuItem": {
+            "id": "menu-1",
+            "name": "Spanish Pistachio Latte",
+            "category": "Signature Lattes",
+            "description": "Double shot of single-origin espresso, velvety textured condensed milk, and roasted Sicilian pistachio cream foam.",
+            "price": 6.8,
+            "calories": 280,
+            "image": "https://images.unsplash.com/photo-1541167760496-1628856ab772?auto=format&fit=crop&w=800&q=80",
+            "isPopular": true,
+            "isSeasonal": false,
+            "dietary": [
+              "Contains Nuts"
+            ],
+            "options": {
+              "sizes": [
+                {
+                  "name": "Regular (12oz)",
+                  "priceAdd": 0
+                },
+                {
+                  "name": "Large (16oz)",
+                  "priceAdd": 0.8
+                }
+              ],
+              "milks": [
+                {
+                  "name": "Whole Organic",
+                  "priceAdd": 0
+                },
+                {
+                  "name": "Oat Milk",
+                  "priceAdd": 0.7
+                },
+                {
+                  "name": "Almond Milk",
+                  "priceAdd": 0.7
+                }
+              ],
+              "syrups": [
+                {
+                  "name": "Standard Sweetness",
+                  "priceAdd": 0
+                },
+                {
+                  "name": "Half Sweet",
+                  "priceAdd": 0
+                },
+                {
+                  "name": "Extra Pistachio Drizzle",
+                  "priceAdd": 0.9
+                }
+              ]
+            },
+            "available": true
+          },
+          "quantity": 1,
+          "customization": {
+            "size": "Large (16oz)",
+            "milk": "Oat Milk"
+          },
+          "itemTotal": 8.3
+        },
+        {
+          "id": "item-2",
+          "menuItem": {
+            "id": "menu-5",
+            "name": "Almond Twice-Baked Croissant",
+            "category": "Artisan Pastries",
+            "description": "French butter laminated croissant soaked in Bourbon vanilla syrup, filled with rich frangipane almond cream and toasted flakes.",
+            "price": 5.5,
+            "calories": 390,
+            "image": "https://images.unsplash.com/photo-1555507036-ab1f4038808a?auto=format&fit=crop&w=800&q=80",
+            "isPopular": true,
+            "dietary": [
+              "Contains Nuts"
+            ],
+            "available": true
+          },
+          "quantity": 1,
+          "itemTotal": 5.5
+        }
+      ],
+      "subtotal": 13.8,
+      "discount": 0,
+      "total": 13.8,
+      "status": "completed",
+      "orderType": "dine_in",
+      "tableNumber": "Table 4",
+      "createdAt": "2026-09-08T13:41:47.197Z"
+    }
+  ],
+  "notifications": [
+    {
+      "id": "notif-1788885721016",
+      "userId": "usr-customer-1",
+      "title": "Visit Recorded! +Points Awarded",
+      "message": "Thanks for visiting AZRO CAFE! +30 points (1.2x tier bonus) & 1 loyalty stamp added. Total visits: 10.",
+      "type": "visit",
+      "createdAt": "2026-09-08T16:42:01.016Z",
+      "read": false
+    },
+    {
+      "id": "notif-1788885721015-4my6",
+      "userId": "usr-customer-1",
+      "title": "🎉 Reward Unlocked: Free Specialty Beverage!",
+      "message": "WhatsApp & SMS notification sent to +91 98765 43210. Value: ₹350. Claim with mobile or QR!",
+      "type": "reward",
+      "createdAt": "2026-09-08T16:42:01.014Z",
+      "read": false
+    },
+    {
+      "id": "notif-1",
+      "userId": "usr-customer-1",
+      "title": "Welcome to AZRO CAFE Rewards",
+      "message": "You have been awarded 50 welcome bonus points and your Silver Tier pathway is active!",
+      "type": "tier",
+      "createdAt": "2026-09-01T16:41:47.197Z",
+      "read": true
+    },
+    {
+      "id": "notif-2",
+      "userId": "usr-customer-1",
+      "title": "Visit Verified +25 Points",
+      "message": "Your in-cafe QR visit was recorded at Table 4. You earned 25 points and 1 stamp!",
+      "type": "visit",
+      "createdAt": "2026-09-08T13:41:47.197Z",
+      "read": false
+    }
+  ],
+  "offers": [
+    {
+      "id": "off-1",
+      "title": "Double Points Morning Rush",
+      "code": "MORNINGROAST",
+      "discountText": "2X Points on all coffees",
+      "description": "Order any espresso or pour over between 7:00 AM and 10:00 AM to collect double loyalty points.",
+      "bannerImage": "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=800&q=80",
+      "expiresAt": "2026-12-31T23:59:59Z",
+      "active": true,
+      "tag": "Daily Boost"
+    },
+    {
+      "id": "off-2",
+      "title": "Afternoon Pastry Pairing",
+      "code": "PASTRYCOMBO",
+      "discountText": "$3 Off with any Drink",
+      "description": "Pair any signature hot beverage with a freshly baked croissant or tart after 2:00 PM.",
+      "bannerImage": "https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=800&q=80",
+      "expiresAt": "2026-11-30T23:59:59Z",
+      "active": true,
+      "tag": "Sweet Treat"
+    }
+  ],
+  "settings": {
+    "cafeName": "AZRO CAFE",
+    "tagline": "Artisanal Roasts & Modern Gathering",
+    "duplicateScanCooldownMinutes": 45,
+    "pointsPerVisit": 25,
+    "pointsPerDollar": 10,
+    "welcomeBonusPoints": 50,
+    "stampsForFreeCoffee": 8,
+    "currencySymbol": "$",
+    "openingHours": "Mon - Sun: 7:00 AM - 9:00 PM",
+    "address": "452 artisan lane, Specialty District"
+  },
+  "auditLogs": [
+    {
+      "id": "aud-1788885723688-r0wc",
+      "action": "VISIT_DUPLICATE_BLOCKED",
+      "actorEmail": "customer@azrocafe.com",
+      "actorRole": "customer",
+      "details": "Scan prevented by cooldown policy: 45m remaining.",
+      "timestamp": "2026-09-08T16:42:03.688Z"
+    },
+    {
+      "id": "aud-1788885721016-oggq",
+      "action": "VISIT_RECORDED",
+      "actorEmail": "customer@azrocafe.com",
+      "actorRole": "customer",
+      "details": "Recorded valid visit at counter_staff. Awarded 30 pts. Total visits: 10.",
+      "timestamp": "2026-09-08T16:42:01.016Z"
+    },
+    {
+      "id": "aud-1788885721015-k85d",
+      "action": "REWARD_UNLOCKED_NOTIFICATION",
+      "actorEmail": "customer@azrocafe.com",
+      "actorRole": "system",
+      "details": "Automated WhatsApp/SMS reward unlocked notification sent to +91 98765 43210 for \"Free Specialty Beverage\" (₹350).",
+      "timestamp": "2026-09-08T16:42:01.015Z"
+    },
+    {
+      "id": "aud-1",
+      "action": "SYSTEM_BOOT",
+      "actorEmail": "system@azrocafe.com",
+      "actorRole": "admin",
+      "details": "AZRO CAFE initialized with MongoDB schema collections and visit cooldown rules.",
+      "timestamp": "2026-09-08T16:41:47.197Z"
+    }
+  ]
+}
