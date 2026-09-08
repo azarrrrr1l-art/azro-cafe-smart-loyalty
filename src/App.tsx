@@ -134,12 +134,14 @@ export default function App() {
   // Auth actions
   const handleLogin = async (email: string, pass: string) => {
     const res = await loginUser(email, pass);
-    if (res.token) {
-      localStorage.setItem('azro_token', res.token);
+    const token = res.token || res.access_token;
+    if (token) {
+      localStorage.setItem('azro_token', token);
     }
-    if (res.user) {
-      setCurrentUser(res.user);
-      if (res.user.role === 'admin') {
+    const user = res.user || (res.id ? res : null);
+    if (user) {
+      setCurrentUser(user);
+      if (user.role === 'admin') {
         setCurrentTab('admin');
       } else {
         setCurrentTab('loyalty');
@@ -150,11 +152,13 @@ export default function App() {
 
   const handleRegister = async (name: string, email: string, phone: string, pass: string) => {
     const res = await registerUser(name, email, phone, pass);
-    if (res.token) {
-      localStorage.setItem('azro_token', res.token);
+    const token = res.token || res.access_token;
+    if (token) {
+      localStorage.setItem('azro_token', token);
     }
-    if (res.user) {
-      setCurrentUser(res.user);
+    const user = res.user || (res.id ? res : null);
+    if (user) {
+      setCurrentUser(user);
       setCurrentTab('loyalty');
       await loadAppData();
     }

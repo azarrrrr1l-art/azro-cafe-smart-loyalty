@@ -58,39 +58,136 @@ export async function fetchHealth() {
 }
 
 export async function loginUser(email: string, password?: string) {
-  const res = await fetch(`${API_BASE}/auth/login`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json'
-    },
-    body: JSON.stringify({ email, password: password || 'azro123' })
-  });
+  const payload = {
+    email,
+    username: email,
+    password: password || 'azro123'
+  };
+  const headers = {
+    'Content-Type': 'application/json',
+    'Accept': 'application/json'
+  };
+
+  const primaryUrl = `${API_BASE}/auth/login`;
+  let res: Response;
+  try {
+    res = await fetch(primaryUrl, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify(payload)
+    });
+  } catch (err) {
+    if (API_BASE !== '/api') {
+      res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(payload)
+      });
+    } else {
+      throw err;
+    }
+  }
+
+  // If 404 returned, attempt fallback endpoints
+  if (res.status === 404) {
+    const candidates = ['/api/auth/login', '/api/login', '/auth/login', '/login', '/api/auth/jwt/login', '/token'];
+    for (const url of candidates) {
+      if (url === primaryUrl) continue;
+      try {
+        const altRes = await fetch(url, {
+          method: 'POST',
+          headers,
+          body: JSON.stringify(payload)
+        });
+        if (altRes.ok) {
+          return parseJsonResponse(altRes, 'Failed to sign in');
+        }
+      } catch {}
+    }
+  }
+
   return parseJsonResponse(res, 'Failed to sign in');
 }
 
 export async function registerUser(name: string, email: string, phone: string, password?: string) {
-  const res = await fetch(`${API_BASE}/auth/register`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json'
-    },
-    body: JSON.stringify({ name, email, phone, password: password || 'azro123' })
-  });
+  const payload = {
+    name,
+    fullName: name,
+    full_name: name,
+    email,
+    username: email,
+    phone,
+    mobile: phone,
+    password: password || 'azro123'
+  };
+  const headers = {
+    'Content-Type': 'application/json',
+    'Accept': 'application/json'
+  };
+
+  const primaryUrl = `${API_BASE}/auth/register`;
+  let res: Response;
+  try {
+    res = await fetch(primaryUrl, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify(payload)
+    });
+  } catch (err) {
+    if (API_BASE !== '/api') {
+      res = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(payload)
+      });
+    } else {
+      throw err;
+    }
+  }
+
+  // If 404 returned, attempt fallback endpoints
+  if (res.status === 404) {
+    const candidates = ['/api/auth/register', '/api/register', '/auth/register', '/register', '/api/users'];
+    for (const url of candidates) {
+      if (url === primaryUrl) continue;
+      try {
+        const altRes = await fetch(url, {
+          method: 'POST',
+          headers,
+          body: JSON.stringify(payload)
+        });
+        if (altRes.ok) {
+          return parseJsonResponse(altRes, 'Failed to register');
+        }
+      } catch {}
+    }
+  }
+
   return parseJsonResponse(res, 'Failed to register');
 }
 
 export async function fetchCurrentUser(token: string) {
-  const res = await fetch(`${API_BASE}/auth/me`, {
-    headers: {
-      'Authorization': `Bearer ${token}`,
-      'Accept': 'application/json'
+  const headers = {
+    'Authorization': `Bearer ${token}`,
+    'Accept': 'application/json'
+  };
+  let res = await fetch(`${API_BASE}/auth/me`, { headers });
+  if (res.status === 404) {
+    const candidates = ['/api/auth/me', '/api/me', '/auth/me', '/me', '/api/users/me'];
+    for (const url of candidates) {
+      if (url === `${API_BASE}/auth/me`) continue;
+      try {
+        const altRes = await fetch(url, { headers });
+        if (altRes.ok) {
+          res = altRes;
+          break;
+        }
+      } catch {}
     }
-  });
+  }
   if (!res.ok) return null;
   const data = await parseJsonResponse(res, 'Failed to fetch user profile');
-  return data.user as CustomerProfile;
+  return (data.user || data) as CustomerProfile;
 }
 
 export async function fetchMenu(): Promise<MenuItem[]> {

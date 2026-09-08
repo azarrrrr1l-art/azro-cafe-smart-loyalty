@@ -720,7 +720,16 @@ const loginRoutePaths = [
   '/auth/login',
   '/login',
   '/api/v1/auth/login',
-  '/api/v1/login'
+  '/api/v1/login',
+  '/api/auth/jwt/login',
+  '/auth/jwt/login',
+  '/api/v1/auth/jwt/login',
+  '/token',
+  '/api/token',
+  '/api/v1/token',
+  '/auth/token',
+  '/api/auth/token',
+  '/api/v1/auth/token'
 ];
 
 const registerRoutePaths = [
@@ -730,7 +739,20 @@ const registerRoutePaths = [
   '/register',
   '/api/v1/auth/register',
   '/api/v1/register',
-  '/api/users/register'
+  '/api/users/register',
+  '/users/register',
+  '/api/auth/signup',
+  '/auth/signup',
+  '/api/signup',
+  '/signup',
+  '/api/v1/auth/signup',
+  '/api/v1/signup',
+  '/api/users',
+  '/users',
+  '/api/v1/users',
+  '/api/customers',
+  '/customers',
+  '/api/v1/customers'
 ];
 
 const meRoutePaths = [
@@ -738,7 +760,13 @@ const meRoutePaths = [
   '/api/me',
   '/auth/me',
   '/me',
-  '/api/users/me'
+  '/api/users/me',
+  '/users/me',
+  '/api/v1/users/me',
+  '/api/v1/auth/me',
+  '/api/v1/me',
+  '/api/customers/me',
+  '/customers/me'
 ];
 
 // Helper to format customer document for MongoDB and frontend compatibility
@@ -747,7 +775,9 @@ function formatUserDocument(user: any) {
   return {
     ...safeProfile,
     _id: safeProfile.id || safeProfile._id,
-    id: safeProfile.id || safeProfile._id
+    id: safeProfile.id || safeProfile._id,
+    is_active: true,
+    is_superuser: user.role === 'admin'
   };
 }
 
@@ -787,7 +817,14 @@ loginRoutePaths.forEach(routePath => {
       access_token: token,
       token_type: 'bearer',
       user: userDoc,
-      detail: 'Logged in successfully'
+      id: userDoc.id,
+      _id: userDoc._id,
+      email: userDoc.email,
+      name: userDoc.name,
+      points: userDoc.points,
+      role: userDoc.role,
+      detail: 'Logged in successfully',
+      message: 'Logged in successfully'
     });
   });
 
@@ -808,10 +845,13 @@ registerRoutePaths.forEach(routePath => {
   app.post(routePath, (req: Request, res: Response) => {
     res.setHeader('Content-Type', 'application/json');
     const body = req.body || {};
-    const name = (body.name || body.fullName || body.username || '').toString().trim();
-    const email = (body.email || (body.username && body.username.includes('@') ? body.username : '')).toString().trim();
-    const phone = (body.phone || body.mobile || '').toString().trim();
-    const password = (body.password || '').toString().trim();
+    const name = (body.name || body.fullName || body.full_name || body.username || '').toString().trim();
+    let email = (body.email || (body.username && body.username.includes('@') ? body.username : '')).toString().trim();
+    if (!email && body.username) {
+      email = `${body.username.toString().trim()}@azrocafe.com`;
+    }
+    const phone = (body.phone || body.mobile || body.mobileNumber || body.phone_number || '').toString().trim();
+    const password = (body.password || body.passwordHash || 'azro123').toString().trim();
 
     if (!email) {
       return res.status(400).json({
@@ -881,6 +921,11 @@ registerRoutePaths.forEach(routePath => {
       access_token: token,
       token_type: 'bearer',
       user: userDoc,
+      id: userDoc.id,
+      _id: userDoc._id,
+      email: userDoc.email,
+      name: userDoc.name,
+      points: userDoc.points,
       pointsAwarded: welcomePoints,
       message: 'Registration successful! +50 points added.',
       detail: 'Registration successful! +50 points added.'
@@ -889,6 +934,10 @@ registerRoutePaths.forEach(routePath => {
 
   app.get(routePath, (req: Request, res: Response) => {
     res.setHeader('Content-Type', 'application/json');
+    // If it's a list route, return users
+    if (routePath.endsWith('/users') || routePath.endsWith('/customers')) {
+      return res.status(200).json(db.users.map(u => formatUserDocument(u)));
+    }
     res.status(200).json({
       status: 'ok',
       endpoint: 'register',
@@ -934,6 +983,34 @@ meRoutePaths.forEach(routePath => {
 
   app.get(routePath, handler);
   app.post(routePath, handler);
+});
+
+// FastAPI OpenAPI documentation endpoints
+app.get(['/openapi.json', '/api/openapi.json', '/api/v1/openapi.json'], (req: Request, res: Response) => {
+  res.setHeader('Content-Type', 'application/json');
+  res.status(200).json({
+    openapi: '3.1.0',
+    info: { title: 'AZRO CAFE API', version: '1.0.0' },
+    paths: {
+      '/api/auth/login': { post: { summary: 'Login user' } },
+      '/api/auth/register': { post: { summary: 'Register customer (+50 points welcome bonus)' } },
+      '/api/auth/me': { get: { summary: 'Get current user profile' } },
+      '/api/mongodb/status': { get: { summary: 'MongoDB status' } }
+    }
+  });
+});
+
+app.get(['/docs', '/api/docs', '/redoc'], (req: Request, res: Response) => {
+  res.setHeader('Content-Type', 'application/json');
+  res.status(200).json({
+    message: 'AZRO CAFE API Documentation',
+    endpoints: {
+      login: 'POST /api/auth/login',
+      register: 'POST /api/auth/register (+50 points)',
+      me: 'GET /api/auth/me',
+      mongodb: 'GET /api/mongodb/status'
+    }
+  });
 });
 
 // MongoDB Connection & Document Collections
@@ -1855,13 +1932,38 @@ app.all([
   '/login', '/login/*',
   '/register', '/register/*',
   '/mongodb', '/mongodb/*',
-  '/users', '/users/*'
+  '/users', '/users/*',
+  '/customers', '/customers/*',
+  '/token', '/token/*'
 ], (req: Request, res: Response) => {
   res.setHeader('Content-Type', 'application/json');
   res.status(404).json({
+    code: 404,
+    message: 'The page could not be found',
     error: `Endpoint ${req.method} ${req.originalUrl} not found`,
     detail: `Endpoint ${req.method} ${req.originalUrl} not found`
   });
+});
+
+// JSON fallback for any non-GET request or requests accepting JSON
+app.use((req: Request, res: Response, next: any) => {
+  const isApi = req.path.startsWith('/api') ||
+                req.path.startsWith('/auth') ||
+                req.path.startsWith('/users') ||
+                req.path.startsWith('/customers') ||
+                req.path.startsWith('/token') ||
+                req.headers.accept?.includes('application/json') ||
+                req.method !== 'GET';
+  if (isApi) {
+    res.setHeader('Content-Type', 'application/json');
+    return res.status(404).json({
+      code: 404,
+      message: 'The page could not be found',
+      error: `Endpoint ${req.method} ${req.originalUrl} not found`,
+      detail: `Endpoint ${req.method} ${req.originalUrl} not found`
+    });
+  }
+  next();
 });
 
 // Global error handler
