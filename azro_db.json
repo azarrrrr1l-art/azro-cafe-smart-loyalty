@@ -74,6 +74,22 @@
       "stampsCount": 0,
       "passwordHash": "password123",
       "__v": 0
+    },
+    {
+      "_id": "usr-cust-1788888315950",
+      "id": "usr-cust-1788888315950",
+      "name": "Test User",
+      "email": "test1@azrocafe.com",
+      "phone": "1234567890",
+      "role": "customer",
+      "createdAt": "2026-09-08T17:25:15.950Z",
+      "points": 50,
+      "totalVisits": 0,
+      "membershipLevel": "Bronze",
+      "qrSecret": "AZRO_CUST_MTSXWYLQ",
+      "stampsCount": 0,
+      "passwordHash": "password123",
+      "__v": 0
     }
   ],
   "visits": [
@@ -567,6 +583,15 @@
   ],
   "notifications": [
     {
+      "id": "notif-1788888315950",
+      "userId": "usr-cust-1788888315950",
+      "title": "Welcome to AZRO CAFE!",
+      "message": "You earned 50 welcome points. Scan your QR in-store to earn stamps and climb membership tiers!",
+      "type": "promo",
+      "createdAt": "2026-09-08T17:25:15.950Z",
+      "read": false
+    },
+    {
       "id": "notif-1788887692285",
       "userId": "usr-cust-1788887692285",
       "title": "Welcome to AZRO CAFE!",
@@ -658,6 +683,14 @@
     "address": "452 artisan lane, Specialty District"
   },
   "auditLogs": [
+    {
+      "id": "aud-1788888315950-fbop",
+      "action": "AUTH_REGISTER",
+      "actorEmail": "test1@azrocafe.com",
+      "actorRole": "customer",
+      "details": "Registered new member account with 50 bonus points.",
+      "timestamp": "2026-09-08T17:25:15.950Z"
+    },
     {
       "id": "aud-1788887694655-y29l",
       "action": "AUTH_LOGIN",

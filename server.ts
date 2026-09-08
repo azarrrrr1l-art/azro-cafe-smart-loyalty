@@ -12,6 +12,12 @@ import {
 const app = express();
 const PORT = 3000;
 
+// Request logging for every request
+app.use((req, res, next) => {
+  console.log(`[API REQUEST] ${req.method} ${req.originalUrl || req.url}`);
+  next();
+});
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -1925,57 +1931,6 @@ app.post('/api/seed/reset', (req: Request, res: Response) => {
   res.json({ message: 'Database reset to initial sample state.' });
 });
 
-// 404 handler for all API and backend routes to guarantee JSON responses (never HTML)
-app.all([
-  '/api', '/api/*',
-  '/auth', '/auth/*',
-  '/login', '/login/*',
-  '/register', '/register/*',
-  '/mongodb', '/mongodb/*',
-  '/users', '/users/*',
-  '/customers', '/customers/*',
-  '/token', '/token/*'
-], (req: Request, res: Response) => {
-  res.setHeader('Content-Type', 'application/json');
-  res.status(404).json({
-    code: 404,
-    message: 'The page could not be found',
-    error: `Endpoint ${req.method} ${req.originalUrl} not found`,
-    detail: `Endpoint ${req.method} ${req.originalUrl} not found`
-  });
-});
-
-// JSON fallback for any non-GET request or requests accepting JSON
-app.use((req: Request, res: Response, next: any) => {
-  const isApi = req.path.startsWith('/api') ||
-                req.path.startsWith('/auth') ||
-                req.path.startsWith('/users') ||
-                req.path.startsWith('/customers') ||
-                req.path.startsWith('/token') ||
-                req.headers.accept?.includes('application/json') ||
-                req.method !== 'GET';
-  if (isApi) {
-    res.setHeader('Content-Type', 'application/json');
-    return res.status(404).json({
-      code: 404,
-      message: 'The page could not be found',
-      error: `Endpoint ${req.method} ${req.originalUrl} not found`,
-      detail: `Endpoint ${req.method} ${req.originalUrl} not found`
-    });
-  }
-  next();
-});
-
-// Global error handler
-app.use((err: any, req: Request, res: Response, next: any) => {
-  console.error('Server error:', err);
-  res.setHeader('Content-Type', 'application/json');
-  res.status(err.status || 500).json({
-    error: err.message || 'Internal Server Error',
-    detail: err.message || 'Internal Server Error'
-  });
-});
-
 // Start server with Vite middleware in dev mode
 async function startServer() {
   if (process.env.NODE_ENV !== 'production') {
@@ -1992,8 +1947,29 @@ async function startServer() {
     });
   }
 
+  // 404 handler for unmatched API routes
+  app.all('/api/*', (req: Request, res: Response) => {
+    res.setHeader('Content-Type', 'application/json');
+    res.status(404).json({
+      error: `Endpoint ${req.method} ${req.originalUrl} not found`,
+      detail: `Endpoint ${req.method} ${req.originalUrl} not found`
+    });
+  });
+
+  // Global error handler
+  app.use((err: any, req: Request, res: Response, next: any) => {
+    console.error('Server error:', err);
+    if (!res.headersSent) {
+      res.setHeader('Content-Type', 'application/json');
+      res.status(err.status || 500).json({
+        error: err.message || 'Internal Server Error',
+        detail: err.message || 'Internal Server Error'
+      });
+    }
+  });
+
   app.listen(PORT, '0.0.0.0', () => {
-    console.log(`AZRO CAFE Full-Stack server running at http://0.0.0.0:${PORT}`);
+    console.log(`[SERVER] Express + Vite server running on PORT 3000`);
   });
 }
 
