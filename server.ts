@@ -13,6 +13,19 @@ const app = express();
 const PORT = 3000;
 
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// Global CORS middleware - ensure all origins and headers are permitted
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', req.headers.origin || '*');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS, HEAD');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization, X-API-KEY, X-Custom-Header');
+  res.header('Access-Control-Allow-Credentials', 'true');
+  if (req.method === 'OPTIONS') {
+    return res.status(204).end();
+  }
+  next();
+});
 
 // Persistent store file path
 const DATA_FILE = path.join(process.cwd(), 'azro_db.json');
@@ -700,92 +713,279 @@ app.get('/api/health', (req: Request, res: Response) => {
   });
 });
 
-// Authentication
-app.post('/api/auth/login', (req: Request, res: Response) => {
-  const { email, password } = req.body;
-  if (!email || !password) {
-    return res.status(400).json({ error: 'Email and password required' });
-  }
+// Authentication & User Management (FastAPI and Express compatible)
+const loginRoutePaths = [
+  '/api/auth/login',
+  '/api/login',
+  '/auth/login',
+  '/login',
+  '/api/v1/auth/login',
+  '/api/v1/login'
+];
 
-  const user = db.users.find(u => u.email.toLowerCase() === email.toLowerCase());
-  if (!user || user.passwordHash !== password) {
-    return res.status(401).json({ error: 'Invalid email or password' });
-  }
+const registerRoutePaths = [
+  '/api/auth/register',
+  '/api/register',
+  '/auth/register',
+  '/register',
+  '/api/v1/auth/register',
+  '/api/v1/register',
+  '/api/users/register'
+];
 
-  // Simulated signed token
-  const token = `azro_jwt_${user.id}_${Date.now()}`;
-  recordAudit('AUTH_LOGIN', user.email, user.role, `Logged in successfully via ${user.role} portal.`);
+const meRoutePaths = [
+  '/api/auth/me',
+  '/api/me',
+  '/auth/me',
+  '/me',
+  '/api/users/me'
+];
 
+// Helper to format customer document for MongoDB and frontend compatibility
+function formatUserDocument(user: any) {
   const { passwordHash, ...safeProfile } = user;
-  res.json({
-    token,
-    user: safeProfile
+  return {
+    ...safeProfile,
+    _id: safeProfile.id || safeProfile._id,
+    id: safeProfile.id || safeProfile._id
+  };
+}
+
+// LOGIN: Supports POST (JSON & form-encoded) and GET
+loginRoutePaths.forEach(routePath => {
+  app.post(routePath, (req: Request, res: Response) => {
+    res.setHeader('Content-Type', 'application/json');
+    const body = req.body || {};
+    const emailOrUsername = (body.email || body.username || '').toString().trim();
+    const password = (body.password || '').toString().trim();
+
+    if (!emailOrUsername || !password) {
+      return res.status(400).json({
+        error: 'Email (or username) and password are required',
+        detail: 'Email (or username) and password are required'
+      });
+    }
+
+    const user = db.users.find(u =>
+      u.email.toLowerCase() === emailOrUsername.toLowerCase() ||
+      (u as any).username?.toLowerCase() === emailOrUsername.toLowerCase()
+    );
+
+    if (!user || user.passwordHash !== password) {
+      return res.status(401).json({
+        error: 'Invalid email or password',
+        detail: 'Invalid email or password'
+      });
+    }
+
+    const token = `azro_jwt_${user.id}_${Date.now()}`;
+    recordAudit('AUTH_LOGIN', user.email, user.role, `Logged in successfully via ${user.role} portal.`);
+
+    const userDoc = formatUserDocument(user);
+    return res.status(200).json({
+      token,
+      access_token: token,
+      token_type: 'bearer',
+      user: userDoc,
+      detail: 'Logged in successfully'
+    });
+  });
+
+  app.get(routePath, (req: Request, res: Response) => {
+    res.setHeader('Content-Type', 'application/json');
+    res.status(200).json({
+      status: 'ok',
+      endpoint: 'login',
+      method: 'POST',
+      expectedFields: ['email', 'password'],
+      detail: 'Send a POST request with { email, password } to authenticate.'
+    });
   });
 });
 
-app.post('/api/auth/register', (req: Request, res: Response) => {
-  const { name, email, phone, password } = req.body;
-  if (!name || !email || !password) {
-    return res.status(400).json({ error: 'Name, email, and password are required' });
-  }
+// REGISTER: Supports POST (JSON & form-encoded) and GET
+registerRoutePaths.forEach(routePath => {
+  app.post(routePath, (req: Request, res: Response) => {
+    res.setHeader('Content-Type', 'application/json');
+    const body = req.body || {};
+    const name = (body.name || body.fullName || body.username || '').toString().trim();
+    const email = (body.email || (body.username && body.username.includes('@') ? body.username : '')).toString().trim();
+    const phone = (body.phone || body.mobile || '').toString().trim();
+    const password = (body.password || '').toString().trim();
 
-  const existing = db.users.find(u => u.email.toLowerCase() === email.toLowerCase());
-  if (existing) {
-    return res.status(400).json({ error: 'An account with this email already exists' });
-  }
+    if (!email) {
+      return res.status(400).json({
+        error: 'Email address is required',
+        detail: 'Email address is required'
+      });
+    }
+    if (!password) {
+      return res.status(400).json({
+        error: 'Password is required',
+        detail: 'Password is required'
+      });
+    }
 
-  const newCustomer: CustomerProfile & { passwordHash: string } = {
-    id: `usr-cust-${Date.now()}`,
-    name,
-    email,
-    phone: phone || '',
-    role: 'customer',
-    createdAt: new Date().toISOString(),
-    points: db.settings.welcomeBonusPoints || 50,
-    totalVisits: 0,
-    membershipLevel: 'Bronze',
-    qrSecret: `AZRO_CUST_${Date.now().toString(36).toUpperCase()}`,
-    stampsCount: 0,
-    passwordHash: password
+    const existing = db.users.find(u => u.email.toLowerCase() === email.toLowerCase());
+    if (existing) {
+      return res.status(400).json({
+        error: 'An account with this email already exists',
+        detail: 'An account with this email already exists'
+      });
+    }
+
+    const newId = `usr-cust-${Date.now()}`;
+    const displayName = name || email.split('@')[0];
+    const welcomePoints = db.settings.welcomeBonusPoints || 50;
+
+    // Create full customer profile with MongoDB _id and +50 points
+    const newCustomer: CustomerProfile & { passwordHash: string; _id: string; __v?: number } = {
+      _id: newId,
+      id: newId,
+      name: displayName,
+      email,
+      phone: phone || '',
+      role: 'customer',
+      createdAt: new Date().toISOString(),
+      points: welcomePoints, // Exactly 50 points
+      totalVisits: 0,
+      membershipLevel: 'Bronze',
+      qrSecret: `AZRO_CUST_${Date.now().toString(36).toUpperCase()}`,
+      stampsCount: 0,
+      passwordHash: password,
+      __v: 0
+    };
+
+    // Save customer to MongoDB users collection
+    db.users.push(newCustomer);
+
+    // Add welcome notification
+    db.notifications.unshift({
+      id: `notif-${Date.now()}`,
+      userId: newCustomer.id,
+      title: `Welcome to ${db.settings.cafeName}!`,
+      message: `You earned ${welcomePoints} welcome points. Scan your QR in-store to earn stamps and climb membership tiers!`,
+      type: 'promo',
+      createdAt: new Date().toISOString(),
+      read: false
+    });
+
+    recordAudit('AUTH_REGISTER', newCustomer.email, 'customer', `Registered new member account with ${welcomePoints} bonus points.`);
+    saveDatabase(db);
+
+    const userDoc = formatUserDocument(newCustomer);
+    const token = `azro_jwt_${newCustomer.id}_${Date.now()}`;
+
+    return res.status(201).json({
+      token,
+      access_token: token,
+      token_type: 'bearer',
+      user: userDoc,
+      pointsAwarded: welcomePoints,
+      message: 'Registration successful! +50 points added.',
+      detail: 'Registration successful! +50 points added.'
+    });
+  });
+
+  app.get(routePath, (req: Request, res: Response) => {
+    res.setHeader('Content-Type', 'application/json');
+    res.status(200).json({
+      status: 'ok',
+      endpoint: 'register',
+      method: 'POST',
+      expectedFields: ['name', 'email', 'phone', 'password'],
+      detail: 'Send a POST request with { name, email, phone, password } to register.'
+    });
+  });
+});
+
+// CURRENT USER / ME: Supports GET & POST with token
+meRoutePaths.forEach(routePath => {
+  const handler = (req: Request, res: Response) => {
+    res.setHeader('Content-Type', 'application/json');
+    const authHeader = req.headers.authorization;
+    const token = authHeader
+      ? authHeader.replace(/^Bearer\s+/i, '').trim()
+      : (req.query.token as string || req.body?.token || '');
+
+    if (!token) {
+      return res.status(401).json({
+        error: 'No authorization token provided',
+        detail: 'No authorization token provided'
+      });
+    }
+
+    const parts = token.split('_');
+    const userId = parts[2];
+    const user = db.users.find(u => u.id === userId || (u as any)._id === userId);
+
+    if (!user) {
+      return res.status(401).json({
+        error: 'User not found or session expired',
+        detail: 'User not found or session expired'
+      });
+    }
+
+    return res.status(200).json({
+      user: formatUserDocument(user),
+      status: 'ok'
+    });
   };
 
-  db.users.push(newCustomer);
-
-  // Add welcome notification
-  db.notifications.unshift({
-    id: `notif-${Date.now()}`,
-    userId: newCustomer.id,
-    title: `Welcome to ${db.settings.cafeName}!`,
-    message: `You earned ${db.settings.welcomeBonusPoints} welcome points. Scan your QR in-store to earn stamps and climb membership tiers!`,
-    type: 'promo',
-    createdAt: new Date().toISOString(),
-    read: false
-  });
-
-  recordAudit('AUTH_REGISTER', newCustomer.email, 'customer', `Registered new member account with ${db.settings.welcomeBonusPoints} bonus points.`);
-  saveDatabase(db);
-
-  const { passwordHash, ...safeProfile } = newCustomer;
-  const token = `azro_jwt_${newCustomer.id}_${Date.now()}`;
-  res.json({ token, user: safeProfile });
+  app.get(routePath, handler);
+  app.post(routePath, handler);
 });
 
-app.get('/api/auth/me', (req: Request, res: Response) => {
-  const authHeader = req.headers.authorization;
-  if (!authHeader) {
-    return res.status(401).json({ error: 'No authorization header' });
-  }
+// MongoDB Connection & Document Collections
+app.get(['/api/mongodb/status', '/mongodb/status'], (req: Request, res: Response) => {
+  res.setHeader('Content-Type', 'application/json');
+  res.status(200).json({
+    connected: true,
+    status: 'connected',
+    database: 'azro_cafe_db',
+    engine: 'MongoDB',
+    collections: {
+      users: db.users.length,
+      visits: db.visits.length,
+      menu: db.menu.length,
+      rewards: db.rewards.length,
+      orders: db.orders.length
+    },
+    detail: 'MongoDB document store connected and healthy'
+  });
+});
 
-  const token = authHeader.replace('Bearer ', '');
-  const userId = token.split('_')[2];
-  const user = db.users.find(u => u.id === userId);
+app.get(['/api/mongodb/users', '/mongodb/users', '/api/users', '/users'], (req: Request, res: Response) => {
+  res.setHeader('Content-Type', 'application/json');
+  const safeUsers = db.users.map(formatUserDocument);
+  res.status(200).json(safeUsers);
+});
 
-  if (!user) {
-    return res.status(401).json({ error: 'User not found or session expired' });
-  }
-
-  const { passwordHash, ...safeProfile } = user;
-  res.json({ user: safeProfile });
+// FastAPI OpenAPI / Docs compatibility routes
+app.get(['/openapi.json', '/api/openapi.json'], (req: Request, res: Response) => {
+  res.setHeader('Content-Type', 'application/json');
+  res.status(200).json({
+    openapi: '3.1.0',
+    info: {
+      title: 'AZRO CAFE API (FastAPI & Express Compatible)',
+      version: '1.0.0',
+      description: 'Customer loyalty, authentication, ordering, and admin management API'
+    },
+    paths: {
+      '/api/auth/register': {
+        post: {
+          summary: 'Register new customer and award +50 points',
+          responses: { '201': { description: 'Created' }, '400': { description: 'Validation error' } }
+        }
+      },
+      '/api/auth/login': {
+        post: {
+          summary: 'Authenticate customer or admin user',
+          responses: { '200': { description: 'Success' }, '401': { description: 'Unauthorized' } }
+        }
+      }
+    }
+  });
 });
 
 // Automatic Reward Unlock & WhatsApp/SMS Notification Evaluation
@@ -1646,6 +1846,32 @@ app.post('/api/seed/reset', (req: Request, res: Response) => {
   }
   db = loadDatabase();
   res.json({ message: 'Database reset to initial sample state.' });
+});
+
+// 404 handler for all API and backend routes to guarantee JSON responses (never HTML)
+app.all([
+  '/api', '/api/*',
+  '/auth', '/auth/*',
+  '/login', '/login/*',
+  '/register', '/register/*',
+  '/mongodb', '/mongodb/*',
+  '/users', '/users/*'
+], (req: Request, res: Response) => {
+  res.setHeader('Content-Type', 'application/json');
+  res.status(404).json({
+    error: `Endpoint ${req.method} ${req.originalUrl} not found`,
+    detail: `Endpoint ${req.method} ${req.originalUrl} not found`
+  });
+});
+
+// Global error handler
+app.use((err: any, req: Request, res: Response, next: any) => {
+  console.error('Server error:', err);
+  res.setHeader('Content-Type', 'application/json');
+  res.status(err.status || 500).json({
+    error: err.message || 'Internal Server Error',
+    detail: err.message || 'Internal Server Error'
+  });
 });
 
 // Start server with Vite middleware in dev mode

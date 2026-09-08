@@ -7,7 +7,7 @@ interface NavbarProps {
   currentTab: string;
   setCurrentTab: (tab: string) => void;
   currentUser: CustomerProfile | null;
-  onOpenAuth: () => void;
+  onOpenAuth: (mode?: 'login' | 'register') => void;
   onOpenQR: () => void;
   onOpenCart: () => void;
   onOpenNotifs: () => void;
@@ -189,14 +189,24 @@ export const Navbar: React.FC<NavbarProps> = ({
                 </div>
               </div>
             ) : (
-              <button
-                id="nav-signin-btn"
-                onClick={onOpenAuth}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs sm:text-sm font-semibold text-[#29221D] border border-[#D8C6B2] hover:bg-[#EFE6DA] transition-colors"
-              >
-                <UserIcon className="w-4 h-4 text-[#D97724]" />
-                <span>Sign In</span>
-              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  id="nav-join-rewards-btn"
+                  onClick={() => onOpenAuth('register')}
+                  className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs sm:text-sm font-semibold text-[#D97724] bg-[#FAF7F2] border border-[#D97724]/40 hover:bg-[#FAF2E8] transition-colors"
+                >
+                  <Sparkles className="w-3.5 h-3.5 text-[#D97724]" />
+                  <span>Join Rewards (+50 pts)</span>
+                </button>
+                <button
+                  id="nav-signin-btn"
+                  onClick={() => onOpenAuth('login')}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs sm:text-sm font-semibold text-[#29221D] border border-[#D8C6B2] hover:bg-[#EFE6DA] transition-colors"
+                >
+                  <UserIcon className="w-4 h-4 text-[#D97724]" />
+                  <span>Sign In</span>
+                </button>
+              </div>
             )}
           </div>
         </div>

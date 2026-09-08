@@ -4,45 +4,92 @@ import {
   RewardNotificationRecord, CustomerRewardState
 } from './types';
 
-export const API_BASE = '/api';
+// Base API configuration with fallback to relative /api
+const envApi = (typeof import.meta !== 'undefined' && (import.meta as any).env)
+  ? ((import.meta as any).env.VITE_API_URL || (import.meta as any).env.VITE_API_BASE_URL || (import.meta as any).env.VITE_BACKEND_URL)
+  : undefined;
+
+export const API_BASE = (envApi && typeof envApi === 'string' && envApi.trim() !== '')
+  ? envApi.trim().replace(/\/+$/, '')
+  : '/api';
+
+/**
+ * Safe JSON parser that prevents "Unexpected token '<', 'The page c...' is not valid JSON" errors
+ * when the server responds with HTML or an unformatted error.
+ */
+async function parseJsonResponse(res: Response, fallbackError = 'Request failed') {
+  const contentType = res.headers.get('content-type') || '';
+  let data: any = null;
+
+  if (contentType.includes('application/json')) {
+    try {
+      data = await res.json();
+    } catch {
+      data = null;
+    }
+  }
+
+  if (data === null) {
+    try {
+      const text = await res.text();
+      try {
+        data = JSON.parse(text);
+      } catch {
+        data = { error: text || res.statusText || fallbackError };
+      }
+    } catch {
+      data = { error: fallbackError };
+    }
+  }
+
+  if (!res.ok) {
+    const errorMsg = data?.error || data?.detail || data?.message || `${fallbackError} (${res.status})`;
+    throw new Error(typeof errorMsg === 'string' ? errorMsg : JSON.stringify(errorMsg));
+  }
+
+  return data;
+}
 
 export async function fetchHealth() {
-  const res = await fetch(`${API_BASE}/health`);
-  return res.json();
+  const res = await fetch(`${API_BASE}/health`, {
+    headers: { 'Accept': 'application/json' }
+  });
+  return parseJsonResponse(res, 'Health check failed');
 }
 
 export async function loginUser(email: string, password?: string) {
   const res = await fetch(`${API_BASE}/auth/login`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json'
+    },
     body: JSON.stringify({ email, password: password || 'azro123' })
   });
-  if (!res.ok) {
-    const data = await res.json();
-    throw new Error(data.error || 'Failed to login');
-  }
-  return res.json();
+  return parseJsonResponse(res, 'Failed to sign in');
 }
 
 export async function registerUser(name: string, email: string, phone: string, password?: string) {
   const res = await fetch(`${API_BASE}/auth/register`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json'
+    },
     body: JSON.stringify({ name, email, phone, password: password || 'azro123' })
   });
-  if (!res.ok) {
-    const data = await res.json();
-    throw new Error(data.error || 'Failed to register');
-  }
-  return res.json();
+  return parseJsonResponse(res, 'Failed to register');
 }
 
 export async function fetchCurrentUser(token: string) {
   const res = await fetch(`${API_BASE}/auth/me`, {
-    headers: { Authorization: `Bearer ${token}` }
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Accept': 'application/json'
+    }
   });
   if (!res.ok) return null;
-  const data = await res.json();
+  const data = await parseJsonResponse(res, 'Failed to fetch user profile');
   return data.user as CustomerProfile;
 }
 

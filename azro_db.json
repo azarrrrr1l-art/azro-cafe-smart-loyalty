@@ -42,6 +42,22 @@
       "qrSecret": "AZRO_STAFF_SECRET",
       "stampsCount": 0,
       "passwordHash": "staff123"
+    },
+    {
+      "_id": "usr-cust-1788887120516",
+      "id": "usr-cust-1788887120516",
+      "name": "Priya Sharma",
+      "email": "priya@example.com",
+      "phone": "+91 98765 12345",
+      "role": "customer",
+      "createdAt": "2026-09-08T17:05:20.516Z",
+      "points": 50,
+      "totalVisits": 0,
+      "membershipLevel": "Bronze",
+      "qrSecret": "AZRO_CUST_MTSX7C78",
+      "stampsCount": 0,
+      "passwordHash": "password123",
+      "__v": 0
     }
   ],
   "visits": [
@@ -535,6 +551,15 @@
   ],
   "notifications": [
     {
+      "id": "notif-1788887120516",
+      "userId": "usr-cust-1788887120516",
+      "title": "Welcome to AZRO CAFE!",
+      "message": "You earned 50 welcome points. Scan your QR in-store to earn stamps and climb membership tiers!",
+      "type": "promo",
+      "createdAt": "2026-09-08T17:05:20.516Z",
+      "read": false
+    },
+    {
       "id": "notif-1788885721016",
       "userId": "usr-customer-1",
       "title": "Visit Recorded! +Points Awarded",
@@ -608,6 +633,62 @@
     "address": "452 artisan lane, Specialty District"
   },
   "auditLogs": [
+    {
+      "id": "aud-1788887135291-y3kf",
+      "action": "AUTH_LOGIN",
+      "actorEmail": "customer@azrocafe.com",
+      "actorRole": "customer",
+      "details": "Logged in successfully via customer portal.",
+      "timestamp": "2026-09-08T17:05:35.291Z"
+    },
+    {
+      "id": "aud-1788887135274-ovb1",
+      "action": "AUTH_LOGIN",
+      "actorEmail": "staff@azrocafe.com",
+      "actorRole": "staff",
+      "details": "Logged in successfully via staff portal.",
+      "timestamp": "2026-09-08T17:05:35.274Z"
+    },
+    {
+      "id": "aud-1788887135257-32ra",
+      "action": "AUTH_LOGIN",
+      "actorEmail": "admin@azrocafe.com",
+      "actorRole": "admin",
+      "details": "Logged in successfully via admin portal.",
+      "timestamp": "2026-09-08T17:05:35.257Z"
+    },
+    {
+      "id": "aud-1788887124129-iwlf",
+      "action": "AUTH_LOGIN",
+      "actorEmail": "priya@example.com",
+      "actorRole": "customer",
+      "details": "Logged in successfully via customer portal.",
+      "timestamp": "2026-09-08T17:05:24.129Z"
+    },
+    {
+      "id": "aud-1788887120517-c3n6",
+      "action": "AUTH_REGISTER",
+      "actorEmail": "priya@example.com",
+      "actorRole": "customer",
+      "details": "Registered new member account with 50 bonus points.",
+      "timestamp": "2026-09-08T17:05:20.517Z"
+    },
+    {
+      "id": "aud-1788886791620-u5by",
+      "action": "AUTH_LOGIN",
+      "actorEmail": "customer@azrocafe.com",
+      "actorRole": "customer",
+      "details": "Logged in successfully via customer portal.",
+      "timestamp": "2026-09-08T16:59:51.620Z"
+    },
+    {
+      "id": "aud-1788886718735-2wpz",
+      "action": "AUTH_LOGIN",
+      "actorEmail": "customer@azrocafe.com",
+      "actorRole": "customer",
+      "details": "Logged in successfully via customer portal.",
+      "timestamp": "2026-09-08T16:58:38.735Z"
+    },
     {
       "id": "aud-1788885723688-r0wc",
       "action": "VISIT_DUPLICATE_BLOCKED",

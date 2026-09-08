@@ -39,7 +39,13 @@ export default function App() {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isNotifsOpen, setIsNotifsOpen] = useState(false);
   const [isAuthOpen, setIsAuthOpen] = useState(false);
+  const [authInitialMode, setAuthInitialMode] = useState<'login' | 'register'>('login');
   const [selectedItemForModal, setSelectedItemForModal] = useState<MenuItem | null>(null);
+
+  const handleOpenAuth = (mode: 'login' | 'register' = 'login') => {
+    setAuthInitialMode(mode);
+    setIsAuthOpen(true);
+  };
 
   // Initialize data on mount
   useEffect(() => {
@@ -128,23 +134,37 @@ export default function App() {
   // Auth actions
   const handleLogin = async (email: string, pass: string) => {
     const res = await loginUser(email, pass);
-    localStorage.setItem('azro_token', res.token);
-    setCurrentUser(res.user);
-    if (res.user.role === 'admin') {
-      setCurrentTab('admin');
+    if (res.token) {
+      localStorage.setItem('azro_token', res.token);
+    }
+    if (res.user) {
+      setCurrentUser(res.user);
+      if (res.user.role === 'admin') {
+        setCurrentTab('admin');
+      } else {
+        setCurrentTab('loyalty');
+      }
+      await loadAppData();
     }
   };
 
   const handleRegister = async (name: string, email: string, phone: string, pass: string) => {
     const res = await registerUser(name, email, phone, pass);
-    localStorage.setItem('azro_token', res.token);
-    setCurrentUser(res.user);
+    if (res.token) {
+      localStorage.setItem('azro_token', res.token);
+    }
+    if (res.user) {
+      setCurrentUser(res.user);
+      setCurrentTab('loyalty');
+      await loadAppData();
+    }
   };
 
   const handleLogout = () => {
     localStorage.removeItem('azro_token');
     setCurrentUser(null);
     setCurrentTab('home');
+    setAuthInitialMode('login');
     setIsAuthOpen(true);
   };
 
@@ -281,7 +301,7 @@ export default function App() {
         currentTab={currentTab}
         setCurrentTab={setCurrentTab}
         currentUser={currentUser}
-        onOpenAuth={() => setIsAuthOpen(true)}
+        onOpenAuth={handleOpenAuth}
         onOpenQR={() => setIsQRModalOpen(true)}
         onOpenCart={() => setIsCartOpen(true)}
         onOpenNotifs={() => setIsNotifsOpen(true)}
@@ -328,7 +348,7 @@ export default function App() {
             levels={levels}
             visits={visits}
             onOpenQR={() => setIsQRModalOpen(true)}
-            onOpenAuth={() => setIsAuthOpen(true)}
+            onOpenAuth={handleOpenAuth}
             onClaimFreeCoffeeStampReward={() => setCurrentTab('rewards')}
           />
         )}
@@ -337,7 +357,7 @@ export default function App() {
           <RewardsView
             currentUser={currentUser}
             rewards={rewards}
-            onOpenAuth={() => setIsAuthOpen(true)}
+            onOpenAuth={() => handleOpenAuth('login')}
             onPointsUpdated={handlePointsUpdated}
           />
         )}
@@ -388,7 +408,7 @@ export default function App() {
         onVisitSuccess={handleVisitSuccess}
         onOpenAuth={() => {
           setIsQRModalOpen(false);
-          setIsAuthOpen(true);
+          handleOpenAuth('login');
         }}
       />
 
@@ -413,6 +433,7 @@ export default function App() {
 
       <AuthModal
         isOpen={isAuthOpen}
+        initialMode={authInitialMode}
         onClose={() => setIsAuthOpen(false)}
         onLogin={handleLogin}
         onRegister={handleRegister}

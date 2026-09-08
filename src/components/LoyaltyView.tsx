@@ -11,7 +11,7 @@ interface LoyaltyViewProps {
   levels: MembershipLevel[];
   visits: Visit[];
   onOpenQR: () => void;
-  onOpenAuth: () => void;
+  onOpenAuth: (mode?: 'login' | 'register') => void;
   onClaimFreeCoffeeStampReward?: () => void;
 }
 
@@ -52,13 +52,23 @@ export const LoyaltyView: React.FC<LoyaltyViewProps> = ({
           Sign in or create a free member account to get an instant 50 points welcome bonus,
           access your digital loyalty card, track coffee stamps, and earn points on every sip.
         </p>
-        <button
-          id="loyalty-signin-prompt-btn"
-          onClick={onOpenAuth}
-          className="mt-2 px-6 py-3 rounded-2xl bg-[#29221D] hover:bg-[#3D322B] text-white font-bold text-sm shadow-md transition-all"
-        >
-          Sign In / Create Free Account
-        </button>
+        <div className="mt-2 flex flex-wrap justify-center gap-3">
+          <button
+            id="loyalty-join-prompt-btn"
+            onClick={() => onOpenAuth('register')}
+            className="px-6 py-3 rounded-2xl bg-[#D97724] hover:bg-[#C2651B] text-white font-bold text-sm shadow-md transition-all flex items-center gap-2"
+          >
+            <Sparkles className="w-4 h-4" />
+            <span>Join Rewards (+50 pts)</span>
+          </button>
+          <button
+            id="loyalty-signin-prompt-btn"
+            onClick={() => onOpenAuth('login')}
+            className="px-6 py-3 rounded-2xl bg-[#29221D] hover:bg-[#3D322B] text-white font-bold text-sm shadow-md transition-all"
+          >
+            Sign In
+          </button>
+        </div>
       </div>
     );
   }

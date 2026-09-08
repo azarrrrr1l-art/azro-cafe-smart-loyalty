@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { X, User, Mail, Lock, Phone, Sparkles, Shield, Coffee } from 'lucide-react';
 import { AzroLogo } from './AzroLogo';
 import { CustomerProfile } from '../types';
@@ -8,21 +8,30 @@ interface AuthModalProps {
   onClose: () => void;
   onLogin: (email: string, pass: string) => Promise<void>;
   onRegister: (name: string, email: string, phone: string, pass: string) => Promise<void>;
+  initialMode?: 'login' | 'register';
 }
 
 export const AuthModal: React.FC<AuthModalProps> = ({
   isOpen,
   onClose,
   onLogin,
-  onRegister
+  onRegister,
+  initialMode = 'login'
 }) => {
-  const [mode, setMode] = useState<'login' | 'register'>('login');
+  const [mode, setMode] = useState<'login' | 'register'>(initialMode);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (isOpen) {
+      setMode(initialMode);
+      setErrorMsg('');
+    }
+  }, [isOpen, initialMode]);
 
   if (!isOpen) return null;
 
@@ -59,11 +68,13 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in duration-150">
-      <div className="relative w-full max-w-md bg-white rounded-3xl shadow-2xl border border-[#EADFCF] overflow-hidden">
+    <div id="auth-modal-overlay" className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in duration-150">
+      <div id="auth-modal" className="relative w-full max-w-md bg-white rounded-3xl shadow-2xl border border-[#EADFCF] overflow-hidden">
         {/* Header */}
         <div className="p-6 text-center border-b border-stone-100 bg-[#FAF7F2] relative">
           <button
+            id="auth-close-btn"
+            type="button"
             onClick={onClose}
             className="absolute top-4 right-4 p-2 rounded-full hover:bg-stone-200 text-stone-500 transition-colors"
           >
@@ -80,6 +91,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({
         {/* Tab switcher */}
         <div className="flex border-b border-stone-100">
           <button
+            id="auth-tab-login"
+            type="button"
             onClick={() => {
               setMode('login');
               setErrorMsg('');
@@ -93,6 +106,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({
             Sign In
           </button>
           <button
+            id="auth-tab-register"
+            type="button"
             onClick={() => {
               setMode('register');
               setErrorMsg('');
@@ -109,7 +124,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
 
         <div className="p-6 space-y-4">
           {errorMsg && (
-            <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs font-semibold">
+            <div id="auth-error-msg" className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs font-semibold">
               {errorMsg}
             </div>
           )}
@@ -121,6 +136,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
             </span>
             <div className="grid grid-cols-3 gap-1.5">
               <button
+                id="auth-demo-customer-btn"
                 type="button"
                 onClick={() => handleDemoLogin('customer@azrocafe.com', 'azro123')}
                 className="p-1.5 rounded-xl bg-white border border-stone-200 hover:border-[#D97724] text-left text-[11px] font-bold text-stone-800 shadow-2xs transition-colors"
@@ -132,6 +148,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
               </button>
 
               <button
+                id="auth-demo-admin-btn"
                 type="button"
                 onClick={() => handleDemoLogin('admin@azrocafe.com', 'admin123')}
                 className="p-1.5 rounded-xl bg-white border border-stone-200 hover:border-amber-600 text-left text-[11px] font-bold text-stone-800 shadow-2xs transition-colors"
@@ -143,6 +160,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
               </button>
 
               <button
+                id="auth-demo-staff-btn"
                 type="button"
                 onClick={() => handleDemoLogin('staff@azrocafe.com', 'staff123')}
                 className="p-1.5 rounded-xl bg-white border border-stone-200 hover:border-amber-600 text-left text-[11px] font-bold text-stone-800 shadow-2xs transition-colors"
@@ -155,7 +173,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
             </div>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-3 text-xs">
+          <form id="auth-form" onSubmit={handleSubmit} className="space-y-3 text-xs">
             {mode === 'register' && (
               <>
                 <div>
@@ -163,6 +181,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                   <div className="relative">
                     <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400" />
                     <input
+                      id="auth-name-input"
                       type="text"
                       required
                       placeholder="Alex Mercer"
@@ -178,6 +197,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                   <div className="relative">
                     <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400" />
                     <input
+                      id="auth-phone-input"
                       type="tel"
                       placeholder="+1 (555) 019-2834"
                       value={phone}
@@ -194,6 +214,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
               <div className="relative">
                 <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400" />
                 <input
+                  id="auth-email-input"
                   type="email"
                   required
                   placeholder="name@azrocafe.com"
@@ -209,6 +230,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400" />
                 <input
+                  id="auth-password-input"
                   type="password"
                   required
                   placeholder="••••••••"
@@ -220,6 +242,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
             </div>
 
             <button
+              id="auth-submit-btn"
               type="submit"
               disabled={loading}
               className="w-full py-3 rounded-xl bg-[#29221D] hover:bg-[#3D322B] text-white font-bold text-xs shadow-md transition-all mt-2 disabled:opacity-50"
